@@ -1,6 +1,6 @@
-using Catalog.Entities;
+using Catalog.API.Entities;
 
-namespace Catalog.Repositories
+namespace Catalog.API.Repositories
 {
     public class InMemoryItemsRepository : IItemsRepository
     {
@@ -15,5 +15,17 @@ namespace Catalog.Repositories
 
         public Item? GetItem(Guid id) => items.Where(item => item.Id == id).SingleOrDefault();
         public void CreateItem(Item item) => items.Add(item);
+
+        public void UpdateItem(Item item)
+        {
+            int index = items.FindIndex(existingItem => existingItem.Id == item.Id);
+            items[index] = item;
+        }
+
+        public void DeleteItem(Guid id)
+        {
+            int index = items.FindIndex(existingItem => existingItem.Id == id);
+            items.RemoveAt(index);
+        }
     }
 }

@@ -1,4 +1,4 @@
-using Catalog.Repositories;
+using Catalog.API.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 

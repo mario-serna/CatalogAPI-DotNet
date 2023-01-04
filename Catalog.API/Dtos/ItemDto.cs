@@ -1,4 +1,4 @@
-namespace Catalog.Dtos
+namespace Catalog.API.Dtos
 {
     public record ItemDto
     {
