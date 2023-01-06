@@ -92,6 +92,32 @@ public class ItemsControllerTests
     }
 
     [Fact]
+    public async Task GetItemsAsync_WithMatchingItems_ReturnsMatchingItems()
+    {
+        // Arrange
+        var allItems = new[]
+        {
+            new Item(){Name="Potion"},
+            new Item(){Name="Antidote"},
+            new Item(){Name="Mega-Potion"}
+        };
+
+        repositoryStub.Setup(repo => repo.GetItemsAsync())
+                      .ReturnsAsync(allItems);
+
+        string nameToMatch = "Potion";
+
+        var controller = new ItemsController(repositoryStub.Object, loggerStub.Object);
+
+        // Act
+        IEnumerable<ItemDto>? foundItems = await controller.GetItemsAsync(nameToMatch);
+
+        // Assert
+        foundItems.Should().OnlyContain(item => item.Name == allItems[0].Name || item.Name == allItems[2].Name);
+        foundItems?.Count().Should().Be(2);
+    }
+
+    [Fact]
     public async Task CreateItemAsync_WithItemToCreate_ReturnsCreatedItem()
     {
         // Arrange
