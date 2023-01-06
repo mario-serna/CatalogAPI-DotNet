@@ -4,33 +4,34 @@ namespace Catalog.API.Repositories
 {
     public class FirebaseItemsRepository : IItemsRepository
     {
-        private readonly string auth = "8rOiItIG6yhrlnACngoa1gxJmCyQ2SS7U2HO7o0y";
-        private readonly string name = "https://catalogapi-1dfb6-default-rtdb.firebaseio.com/";
+        private readonly string Auth = "8rOiItIG6yhrlnACngoa1gxJmCyQ2SS7U2HO7o0y";
+        private readonly string Name = "https://catalogapi-1dfb6-default-rtdb.firebaseio.com/";
         public FirebaseItemsRepository()
         {
 
         }
-        public void CreateItem(Item item)
+
+        public Task CreateItemAsync(Item item)
         {
             throw new NotImplementedException();
         }
 
-        public void DeleteItem(Guid id)
+        public Task DeleteItemAsync(Guid id)
         {
             throw new NotImplementedException();
         }
 
-        public Item? GetItem(Guid id)
+        public Task<Item?> GetItemAsync(Guid id)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<Item> GetItems()
+        public Task<IEnumerable<Item>> GetItemsAsync()
         {
             throw new NotImplementedException();
         }
 
-        public void UpdateItem(Item item)
+        public Task UpdateItemAsync(Item item)
         {
             throw new NotImplementedException();
         }

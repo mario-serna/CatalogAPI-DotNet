@@ -10,25 +10,33 @@ namespace Catalog.API.Controllers;
 public class ItemsController : ControllerBase
 {
     private readonly IItemsRepository repository;
+    private readonly ILogger<ItemsController> logger;
 
-    public ItemsController(IItemsRepository repository)
+    public ItemsController(IItemsRepository repository, ILogger<ItemsController> logger)
     {
         this.repository = repository;
+        this.logger = logger;
     }
 
     [HttpGet]
-    public IEnumerable<ItemDto>? GetItems() => repository?.GetItems().Select(item => item.AsDto());
+    public async Task<IEnumerable<ItemDto>?> GetItemsAsync()
+    {
+        var items = await repository.GetItemsAsync();
+        if (items is null) return null;
+        logger.LogInformation($"{DateTime.UtcNow.ToString("s")}: Retrieved {items.Count()} items");
+        return items.Select(item => item.AsDto());
+    }
 
     [HttpGet("{id}")]
-    public ActionResult<ItemDto> GetItem(Guid id)
+    public async Task<ActionResult<ItemDto>> GetItemAsync(Guid id)
     {
-        var items = repository?.GetItem(id);
+        var items = await repository.GetItemAsync(id);
         if (items == null) return NotFound();
         return items.AsDto();
     }
 
     [HttpPost]
-    public ActionResult<ItemDto> CreateItem(CreateItemDto itemDto)
+    public async Task<ActionResult<ItemDto>> CreateItemAsync(CreateItemDto itemDto)
     {
         Item item = new()
         {
@@ -38,7 +46,7 @@ public class ItemsController : ControllerBase
             CreatedDate = DateTimeOffset.UtcNow
         };
 
-        repository.CreateItem(item);
+        await repository.CreateItemAsync(item);
 
         // CreatedAtAction gives the item url inside of location header
         // Example:
@@ -46,13 +54,13 @@ public class ItemsController : ControllerBase
         // date: Tue,03 Jan 2023 18:50:49 GMT 
         // location: https://localhost:7201/Items/0a45b716-1fb5-4c33-a574-14095c3a476c 
         // server: Kestrel 
-        return CreatedAtAction(nameof(GetItem), new { Id = item.Id }, item.AsDto());
+        return CreatedAtAction(nameof(GetItemAsync), new { Id = item.Id }, item.AsDto());
     }
 
     [HttpPut("{id}")]
-    public ActionResult<ItemDto> UpdateItem(Guid id, UpdateItemDto itemDto)
+    public async Task<ActionResult<ItemDto>> UpdateItemAsync(Guid id, UpdateItemDto itemDto)
     {
-        Item? existingItem = repository.GetItem(id);
+        Item? existingItem = await repository.GetItemAsync(id);
         if (existingItem is null) return NotFound();
 
         existingItem = existingItem with
@@ -61,18 +69,18 @@ public class ItemsController : ControllerBase
             Price = itemDto.Price
         };
 
-        repository.UpdateItem(existingItem);
+        await repository.UpdateItemAsync(existingItem);
 
         return NoContent();
     }
 
     [HttpDelete("{id}")]
-    public ActionResult<ItemDto> DeleteItem(Guid id)
+    public async Task<ActionResult<ItemDto>> DeleteItemAsync(Guid id)
     {
-        Item? existingItem = repository.GetItem(id);
+        Item? existingItem = await repository.GetItemAsync(id);
         if (existingItem is null) return NotFound();
 
-        repository.DeleteItem(existingItem.Id);
+        await repository.DeleteItemAsync(existingItem.Id);
 
         return NoContent();
     }
