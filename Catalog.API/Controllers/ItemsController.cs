@@ -42,6 +42,7 @@ public class ItemsController : ControllerBase
         {
             Id = Guid.NewGuid(),
             Name = itemDto.Name,
+            Description = itemDto.Description,
             Price = itemDto.Price,
             CreatedDate = DateTimeOffset.UtcNow
         };
@@ -63,11 +64,8 @@ public class ItemsController : ControllerBase
         Item? existingItem = await repository.GetItemAsync(id);
         if (existingItem is null) return NotFound();
 
-        existingItem = existingItem with
-        {
-            Name = itemDto.Name,
-            Price = itemDto.Price
-        };
+        existingItem.Name = itemDto.Name;
+        existingItem.Price = itemDto.Price;
 
         await repository.UpdateItemAsync(existingItem);
 

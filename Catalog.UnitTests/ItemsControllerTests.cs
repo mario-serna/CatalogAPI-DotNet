@@ -95,11 +95,11 @@ public class ItemsControllerTests
     public async Task CreateItemAsync_WithItemToCreate_ReturnsCreatedItem()
     {
         // Arrange
-        CreateItemDto itemToCreate = new()
-        {
-            Name = Guid.NewGuid().ToString(),
-            Price = random.Next(1000)
-        };
+        CreateItemDto itemToCreate = new(
+            Guid.NewGuid().ToString(),
+            Guid.NewGuid().ToString(),
+            random.Next(1000)
+        );
 
         var controller = new ItemsController(repositoryStub.Object, loggerStub.Object);
 
@@ -108,8 +108,7 @@ public class ItemsControllerTests
 
         // Assert
         var createdItem = (result.Result as CreatedAtActionResult)?.Value as ItemDto;
-        itemToCreate.Should().BeEquivalentTo(
-            createdItem,
+        itemToCreate.Should().BeEquivalentTo(createdItem,
             options => options.ComparingByMembers<ItemDto>().ExcludingMissingMembers());
         createdItem?.Id.Should().NotBeEmpty();
         createdItem?.CreatedDate.Should().BeCloseTo(DateTimeOffset.UtcNow, new TimeSpan(0, 0, 1));
@@ -124,11 +123,12 @@ public class ItemsControllerTests
                       .ReturnsAsync(existingItem);
 
         var itemId = existingItem.Id;
-        UpdateItemDto itemToUpdate = new()
-        {
-            Name = Guid.NewGuid().ToString(),
-            Price = existingItem.Price + 4
-        };
+        UpdateItemDto itemToUpdate = new(
+            Guid.NewGuid().ToString(),
+            Guid.NewGuid().ToString(),
+            existingItem.Price + 4
+        );
+
         var controller = new ItemsController(repositoryStub.Object, loggerStub.Object);
 
         // Act
